@@ -4,19 +4,12 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] float maxSpeed = 5f;
-    [SerializeField] float accel = 12f;
-    [SerializeField] float decel = 16f;
     [SerializeField] private Animator animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] float jumpForce = 7f;
     [SerializeField] LayerMask groundLayer;
     [SerializeField] Transform groundCheck;
-    Vector2 currentVelocity;
-
     Rigidbody2D rb;
-
-    float moveX;
     bool isGrounded;
 
     void Awake()
@@ -31,7 +24,6 @@ public class PlayerController : MonoBehaviour
     }
     void Update()
     {
-        moveX = Input.GetAxisRaw("Horizontal");
         //Ground check
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
         //Jump
@@ -42,40 +34,19 @@ public class PlayerController : MonoBehaviour
         }
 
         animator.SetBool("isJumping", !isGrounded);
-
-        //Flip sprite(looks left when going left, vice versa right) 
-        if (moveX > 0)
-            spriteRenderer.flipX = true; // facing right
-        else if (moveX < 0)
-            spriteRenderer.flipX = false;  // facing left
-        Debug.Log(isGrounded);
-
         if (Input.GetMouseButtonDown(0))
         {
             animator.SetTrigger("isAttacking");
         }
     }
-    void FixedUpdate()
+    void OnTriggerEnter2D(Collider2D other)
     {
-
-        Vector2 targetVelocity = new Vector2(moveX * maxSpeed, rb.velocity.y);
-
-        float rate = (Mathf.Abs(moveX) > 0f) ? accel : decel;
-
-        currentVelocity = Vector2.MoveTowards(
-            new Vector2(rb.velocity.x, 0),
-            new Vector2(targetVelocity.x, 0),
-            rate * Time.fixedDeltaTime //smooth movement
-        );
-
-        rb.velocity = new Vector2(currentVelocity.x, rb.velocity.y);
-        animator.SetBool("isWalking", moveX != 0 && isGrounded);
-
-
-
-
+        if (other.gameObject.CompareTag("Collectable"))
+        {
+            Destroy(other.gameObject);//removes coin after collecting
+            ScoreCounter.instance.coinCount++;//increment of one
+        }
     }
 
-
-
+    //Hello!
 }
