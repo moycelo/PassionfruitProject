@@ -18,6 +18,13 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadSceneAsync("MainMenu");
     }
+    public void Retry()
+    {
+        Time.timeScale = 1f;//unfreezes the game when retrying
+        ScoreCounter.isGameOver = false;
+        ScoreCounter.scoreValue = 0;
+        SceneManager.LoadScene("Easy");
+    }
 
     //Hello Sirs
 }

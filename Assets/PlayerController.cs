@@ -1,6 +1,9 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
+
+
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
@@ -9,6 +12,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float jumpForce = 7f;
     [SerializeField] LayerMask groundLayer;
     [SerializeField] Transform groundCheck;
+    [SerializeField] private float fallDeath = -7f;
     private bool doubleJump;
     Rigidbody2D rb;
     bool isGrounded;
@@ -27,6 +31,9 @@ public class PlayerController : MonoBehaviour
     {
         //Ground check
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        //death check
+        if (transform.position.y <= fallDeath) GameOver();
+        if (transform.position.x <= -10f) GameOver();
         //Jump
         if (Input.GetKeyDown(KeyCode.W))
         {
@@ -41,8 +48,8 @@ public class PlayerController : MonoBehaviour
                 doubleJump = false;
             }
 
-        }
 
+        }
 
         animator.SetBool("isJumping", !isGrounded);
         if (Input.GetMouseButtonDown(0))
@@ -61,8 +68,22 @@ public class PlayerController : MonoBehaviour
         {
             doubleJump = true;//enables double jump
             Destroy(other.gameObject);//removes powerup after collecting
-            
+
         }
+    }
+    public void GameOver()
+    {
+        if (ScoreCounter.isGameOver) return;
+        ScoreCounter.isGameOver = true;
+        rb.velocity = Vector2.zero; //stops player from moving
+        StartCoroutine(ShowGameOver());
+    }
+    IEnumerator ShowGameOver()
+    {
+        yield return new WaitForSecondsRealtime(0f); //waits for 1 second before showing game over screen
+        GameOverScreen.instance.Show();
+        Debug.Log("Trying to show game over screen");
+        Debug.Log(GameOverScreen.instance);
     }
 
 
