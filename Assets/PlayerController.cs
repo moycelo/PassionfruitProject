@@ -13,10 +13,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] LayerMask groundLayer;
     [SerializeField] Transform groundCheck;
     [SerializeField] private float fallDeath = -7f;
+
+    //SOUNDS
+    public AudioClip jumpSFX;
+    public AudioClip coinSFX;
+    public AudioClip doubleJumpSFX;
+    public AudioClip GameOverSFX;
+
+
     private bool doubleJump;
     Rigidbody2D rb;
     bool isGrounded;
-
+    private AudioSource audioSource;
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -25,6 +33,7 @@ public class PlayerController : MonoBehaviour
         playerMaterial.friction = 0f;
         playerMaterial.bounciness = 0f;
         GetComponent<Collider2D>().sharedMaterial = playerMaterial;
+        audioSource = GetComponent<AudioSource>();
 
     }
     void Update()
@@ -41,11 +50,14 @@ public class PlayerController : MonoBehaviour
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce); //jump, with jump force
                 animator.SetBool("isJumping", true);
+                PlaySFX(jumpSFX);
+
             }
             else if (doubleJump) //lets player double jump if not grounded
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce - 1); //less jump force on the 2nd jump
                 doubleJump = false;
+                PlaySFX(doubleJumpSFX);
             }
 
 
@@ -62,12 +74,14 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("Collectable"))
         {
             Destroy(other.gameObject);//removes coin after collecting
+            PlaySFX(coinSFX);
             ScoreCounter.instance.coinCount++;//increment of one
         }
         if (other.gameObject.CompareTag("DoubleJump"))
         {
             doubleJump = true;//enables double jump
             Destroy(other.gameObject);//removes powerup after collecting
+            PlaySFX(coinSFX);
 
         }
     }
@@ -77,6 +91,7 @@ public class PlayerController : MonoBehaviour
         ScoreCounter.isGameOver = true;
         rb.velocity = Vector2.zero; //stops player from moving
         StartCoroutine(ShowGameOver());
+        PlaySFX(GameOverSFX);
     }
     IEnumerator ShowGameOver()
     {
@@ -87,5 +102,9 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    //Hello!
+    private void PlaySFX(AudioClip audioClip)
+    {
+        audioSource.clip = audioClip;
+        audioSource.Play();
+    }
 }

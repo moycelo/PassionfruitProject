@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GameOverScreen : MonoBehaviour
 {
+    [SerializeField] private AudioSource bgMusic;
     public static GameOverScreen instance;
     void Awake()
     {
@@ -17,6 +18,10 @@ public class GameOverScreen : MonoBehaviour
     {
         Time.timeScale = 0f;//freezes the game when game over screen is active
         gameObject.SetActive(true);
+
+        if (bgMusic != null)
+            bgMusic.Stop(); // Stop the background music
+
 
     }
 }
