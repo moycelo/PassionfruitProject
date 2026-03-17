@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float jumpForce = 7f;
     [SerializeField] LayerMask groundLayer;
     [SerializeField] Transform groundCheck;
+    private bool doubleJump;
     Rigidbody2D rb;
     bool isGrounded;
 
@@ -27,11 +28,21 @@ public class PlayerController : MonoBehaviour
         //Ground check
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
         //Jump
-        if (Input.GetKeyDown(KeyCode.W) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.W))
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-            animator.SetBool("isJumping", true);
+            if (isGrounded)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce); //jump, with jump force
+                animator.SetBool("isJumping", true);
+            }
+            else if (doubleJump) //lets player double jump if not grounded
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce - 1); //less jump force on the 2nd jump
+                doubleJump = false;
+            }
+
         }
+
 
         animator.SetBool("isJumping", !isGrounded);
         if (Input.GetMouseButtonDown(0))
@@ -46,7 +57,14 @@ public class PlayerController : MonoBehaviour
             Destroy(other.gameObject);//removes coin after collecting
             ScoreCounter.instance.coinCount++;//increment of one
         }
+        if (other.gameObject.CompareTag("DoubleJump"))
+        {
+            doubleJump = true;//enables double jump
+            Destroy(other.gameObject);//removes powerup after collecting
+            
+        }
     }
+
 
     //Hello!
 }
