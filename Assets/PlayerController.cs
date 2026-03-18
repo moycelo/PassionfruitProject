@@ -56,7 +56,7 @@ public class PlayerController : MonoBehaviour
             else if (doubleJump) //lets player double jump if not grounded
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce - 1); //less jump force on the 2nd jump
-                doubleJump = false;
+                doubleJump = true;
                 PlaySFX(doubleJumpSFX);
             }
 
@@ -79,6 +79,7 @@ public class PlayerController : MonoBehaviour
         }
         if (other.gameObject.CompareTag("DoubleJump"))
         {
+            ScoreCounter.instance.coinCount += 2;
             doubleJump = true;//enables double jump
             Destroy(other.gameObject);//removes powerup after collecting
             PlaySFX(coinSFX);

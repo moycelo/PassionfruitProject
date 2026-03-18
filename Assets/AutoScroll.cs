@@ -8,6 +8,8 @@ public class AutoScroll : MonoBehaviour
 
     void Update()
     {
-        transform.Translate(Vector2.left * scrollSpeed * Time.deltaTime);
+        transform.Translate(Vector2.left * Difficulty.instance.currentSpeed * Time.deltaTime);
+        if (ScoreCounter.isGameOver) return;
+        
     }
 }

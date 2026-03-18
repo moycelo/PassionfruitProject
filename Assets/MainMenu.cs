@@ -25,6 +25,18 @@ public class MainMenu : MonoBehaviour
         ScoreCounter.scoreValue = 0;
         SceneManager.LoadScene("Easy");
     }
+    public void DifficultySelection()
+    {
+        SceneManager.LoadSceneAsync("Difficulty");
+    }
+    public void Easy()
+    {
+        SceneManager.LoadSceneAsync("Easy");
+    }
+    public void Easier()
+    {
+        SceneManager.LoadSceneAsync("Easier");
+    }
 
     //Hello Sirs
 }
